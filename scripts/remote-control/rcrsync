@@ -1,0 +1,53 @@
+#!/bin/bash
+. $(dirname $0)/config.sh
+
+
+#echo  " $(dirname $0)/config.sh "
+
+#cd $LOCAL_HOMEDIR
+
+#echo "$LOCAL_HOMEDIR"
+
+echo "...... $HOME"
+
+case "$1" in
+
+	# server 和client上的server目录
+    dist)
+	
+	$(dirname $0)/syncKernels.sh $LOCAL_HOMEDIR/$KERNELDIR
+	$(dirname $0)/syncClients.sh $LOCAL_HOMEDIR/$KERNELDIR
+	;;
+
+	# 地图文件
+    maps)
+	#echo "$MAPDIR"
+	# 之前map路径不对
+	$(dirname $0)/syncKernels.sh $LOCAL_HOMEDIR/$MAPDIR
+	;;
+
+	#代码文件
+    code)
+	if [ ! -z "$2" ]; then
+	    $(dirname $0)/syncClients.sh $LOCAL_HOMEDIR/$CODEDIR/$2 $LOCAL_HOMEDIR/$CODEDIR/
+	else
+	    $(dirname $0)/syncClients.sh $LOCAL_HOMEDIR/$CODEDIR 
+	fi
+	;;
+
+	#收集日志	
+    logs)
+	$(dirname $0)/gatherFromClients.sh $LOGDIR $HOME
+	$(dirname $0)/gatherFromKernels.sh $LOGDIR $HOME
+	;;
+
+    all)
+	$(dirname $0)/syncKernels.sh $LOCAL_HOMEDIR/$KERNELDIR
+	$(dirname $0)/syncClients.sh $LOCAL_HOMEDIR/$KERNELDIR
+	$(dirname $0)/syncKernels.sh $LOCAL_HOMEDIR/$MAPDIR
+	$(dirname $0)/syncClients.sh $LOCAL_HOMEDIR/$CODEDIR
+
+	$(dirname $0)/gatherFromClients.sh $LOGDIR $HOME
+	$(dirname $0)/gatherFromKernels.sh $LOGDIR $HOME
+	;;
+esac
